@@ -8,3 +8,12 @@
     package:
       name:
         - "{{ apache_package }}"
+
+  - name: copying default html files
+    tags: httpd
+    copy:
+     src: default_site.html
+     dest: /var/www/html/index.html
+     owner: root
+     group: root
+     mode: 0644 
