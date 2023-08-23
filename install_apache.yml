@@ -1,0 +1,10 @@
+---
+
+- hosts: web_server
+  tasks:
+
+  - name: install apache
+    tags: CentOS 
+    package:
+      name:
+        - "{{ apache_package }}"
