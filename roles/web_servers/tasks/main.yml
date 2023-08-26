@@ -1,0 +1,34 @@
+- name: install apache web server
+  package:
+    name: httpd
+    state: latest
+  when: ansible_distribution == "CentOS"
+
+- name: start and enabled httpd
+  service:
+   name: httpd
+   state: started
+   enabled: yes
+  when: ansible_distribution == "CentOS"
+
+- name: change e-mail address for admin
+  lineinfile:
+    path: /etc/httpd/conf/httpd.conf
+    regexp: '^ServerAdmin'
+    line: ServerAdmin somebody@somewhere.net
+  when: ansible_distribution == "CentOS"
+  register: httpd
+
+- name: restart httpd
+  service:
+    name: httpd
+    state: restarted
+  when: httpd.changed
+
+- name: copy files
+  copy:
+   src: default_site.html
+   dest: /var/www/html/index.html
+   owner: root
+   group: root
+   mode: 0644

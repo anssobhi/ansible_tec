@@ -1,4 +1,6 @@
-[web_server]
-192.168.43.129 apache_package=httpd
+[web_servers]
+192.168.43.129 
+[file_servers]
+192.168.43.129
 [workstation]
 192.168.43.128 
