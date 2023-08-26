@@ -1,5 +1,27 @@
 ---
 
+- hosts: all
+  tasks:
+  - name: adding anosh user
+    user:
+     name: anosh
+     groups: root
+
+- hosts: all
+  tasks:
+  - name: add ssh key for anosh
+    authorized_key:
+      user: anosh
+      key: "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIP2R5b3zfo0uE13krv6/SHdq+leQJW8nQChnpjhHKFV/ anible"
+  
+  - name: add sudo for anosh
+    copy:
+      src: sudoer_anosh
+      dest: /etc/sudoers.d/anosh
+      owner: root
+      group: root
+      mode: 0440      
+
 - hosts: workstation
   tasks:
 
@@ -21,6 +43,30 @@
       name:
         - "{{ apache_package }}"
 
+  - name: Running apache
+    tags: Run apache 
+    service:
+       name: httpd
+       state: started
+       enabled: yes
+    when: ansible_distribution == "CentOS"
+
+  - name: change email of admin
+    tags: httpd
+    lineinfile:
+      path: /etc/httpd/conf/httpd.conf
+      regexp: '^ServerAdmin'
+      line: ServerAdmin somebody@somewhere.net
+    when: ansible_distribution == "CentOS"
+    register: httpd
+
+  - name: restart httpd
+    tags: httpd
+    service:
+      name: httpd
+      state: restarted
+    when: httpd.changed
+  
   - name: copying default html files
     tags: httpd
     copy:
